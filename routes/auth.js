@@ -1,40 +1,53 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
+const path = require('path');
 const User = require('../models/user');
-const { where } = require('sequelize');
-const { use } = require('.');
 
+// Serve registration page
 router.get('/register', (req, res) => {
-    res.sendFile('register.html', { root: 'views'});
+    res.sendFile(path.join(__dirname, '../views/register.html'));
 });
 
+// Handle registration form submission
 router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Registering user with data:', req.body);
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).send('username, email and password are required');
+    }
     try {
-        const user = await User.create({ username, password: hashedPassword});
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await User.create({ username, email, password: hashedPassword });
         res.redirect('/auth/login');
     } catch (err) {
         res.send('Error: ' + err.message);
     }
 });
 
+// Serve login page
 router.get('/login', (req, res) => {
-    res.sendFile('login.html', { root: 'views' });
+    res.sendFile(path.join(__dirname, '../views/login.html'));
 });
 
+// Handle login form submission
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const user = await User.findOne({ where: { username } });
-    if (user && await bcrypt.compare(password, user.password)) {
-        req.session.user = user;
-        res.redirect('/');
-    } else {
-        res.send('Invalid username or password');
+    try {
+        const user = await User.findOne({ where: { username } });
+        if (user && await bcrypt.compare(password, user.password)) {
+            req.session.user = user;
+            res.redirect('/');
+        } else {
+            res.send('Invalid username or password');
+        }
+    } catch (err) {
+        res.send('Error: ' + err.message);
     }
 });
 
+// Handle logout
 router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');

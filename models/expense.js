@@ -3,8 +3,8 @@ const sequelize = require('../config/database');
 const User = require('./user');
 
 const Expense = sequelize.define('Expense', {
-    id: {
-        type: DataTypes.INTEGER,
+  id: {
+    type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true
   },
@@ -27,6 +27,6 @@ const Expense = sequelize.define('Expense', {
   timestamps: false
 });
 
-Expense.belongsTo(User, { foreignKey: userId });
+Expense.belongsTo(User, { foreignKey: 'userId' });
 
 module.exports = Expense;
