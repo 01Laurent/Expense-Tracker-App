@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
           try {
               const response = await fetch('/auth/login', {
                   method: 'POST',
-                  body: formData
+                  body: new URLSearchParams (formData)
               });
               const result = await response.text();
               if (response.ok) {

@@ -34,18 +34,40 @@ router.get('/login', (req, res) => {
 // Handle login form submission
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
+    console.log('Login request received:', req.body);
+
+    if (!username || !password) {
+        console.log('Missing username or password');
+        return res.status(400).send('Username and password are required');
+    }
+
     try {
         const user = await User.findOne({ where: { username } });
-        if (user && await bcrypt.compare(password, user.password)) {
-            req.session.user = user;
-            res.redirect('/');
-        } else {
-            res.send('Invalid username or password');
+        console.log('User found:', user);
+
+        if (!user) {
+            console.log('User not found');
+            return res.status(401).send('Invalid username or password');
         }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log('Password valid:', isPasswordValid);
+
+        if (!isPasswordValid) {
+            console.log('Invalid password');
+            return res.status(401).send('Invalid username or password');
+        }
+
+        req.session.user = user;
+        console.log('User session:', req.session.user);
+        res.redirect('/');
     } catch (err) {
-        res.send('Error: ' + err.message);
+        console.log('Error:', err.message);
+        res.status(500).send('Error: ' + err.message);
     }
 });
+
+
 
 // Handle logout
 router.get('/logout', (req, res) => {
