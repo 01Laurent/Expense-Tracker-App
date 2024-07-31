@@ -48,28 +48,31 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Handling add expense form submission
-  const addExpenseForm = document.getElementById('addExpenseForm');
-  if (addExpenseForm) {
-      addExpenseForm.addEventListener('submit', async function(event) {
-          event.preventDefault();
-          const formData = new FormData(addExpenseForm);
-          try {
-              const response = await fetch('/expenses/add', {
-                  method: 'POST',
-                  body: formData
-              });
-              const result = await response.text();
-              if (response.ok) {
-                  window.location.href = '/expenses/view';
-              } else {
-                  alert(result); // Show error message
-              }
-          } catch (error) {
-              console.error('Error:', error);
-              alert('An error occurred. Please try again.');
-          }
-      });
-  }
+  addExpenseForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    console.log('Form submission triggered');
+    const formData = new FormData(addExpenseForm);
+
+    try {
+        const response = await fetch('/expenses/add', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.text();
+        console.log('Server response:', result);
+
+        if (response.ok) {
+            window.location.href = '/expenses/view';
+        } else {
+            alert(result);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    }
+});
+
 
   // Handling edit expense form submission
   const editExpenseForm = document.getElementById('editExpenseForm');

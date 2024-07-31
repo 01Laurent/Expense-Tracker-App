@@ -3,41 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Expenses - Expense Tracker</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>View Expenses</title>
+    <link rel="stylesheet" href="/css/view.css">
 </head>
 <body>
     <header>
-        <h1>Welcome To Your Expenses</h1>
+        <h1>View Expenses</h1>
     </header>
     <div class="form-container">
-    <section>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>2024-06-20</td>
-                    <td>$50</td>
-                    <td>Groceries</td>
-                </tr>
-                <tr>
-                    <td>2024-06-21</td>
-                    <td>$30</td>
-                    <td>Transport</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+        <section>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% expenses.forEach(expense => { %>
+                    <tr>
+                        <td><%= expense.title %></td>
+                        <td><%= expense.amount %></td>
+                        <td><%= new Date(expense.date).toLocaleDateString() %></td>
+                        <td>
+                            <a href="/expenses/edit/<%= expense.id %>">Edit</a>
+                            <form action="/expenses/delete/<%= expense.id %>" method="POST" style="display:inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </section> 
     </div>
     <footer>
-        <p>&copy; 2024 Expense Tracker. All rights reserved.</p>
+        <p>© 2024 Expense Tracker. All rights reserved.</p>
     </footer>
-    <script src="/js/main.js"></script>
 </body>
 </html>

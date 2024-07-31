@@ -8,12 +8,16 @@ const Expense = sequelize.define('Expense', {
     autoIncrement: true,
     primaryKey: true
   },
-  description: {
+  title: {
     type: DataTypes.STRING,
     allowNull: false
   },
   amount: {
     type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  date: {
+    type: DataTypes.DATE,
     allowNull: false
   },
   userId: {

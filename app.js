@@ -3,12 +3,11 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const sequelize = require('./config/database');
 const path = require('path');
-const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const port= 3000;
+const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -16,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'wertyuiouyt',
+    secret: process.env.SESSION_SECRET || 'defaultsecret',
     resave: false,
     saveUninitialized: true
 }));
@@ -32,6 +31,6 @@ app.use('/expenses', expenseRouter);
 sequelize.sync({ force: false })
     .then(() => {
         app.listen(port, () => {
-            console.log(`App is running on http://localhost:${port}`)
+            console.log(`App is running on http://localhost:${port}`);
         });
     });

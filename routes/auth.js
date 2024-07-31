@@ -58,11 +58,9 @@ router.post('/login', async (req, res) => {
             return res.status(401).send('Invalid username or password');
         }
 
-        req.session.user = user;
-        console.log('User session:', req.session.user);
+        req.session.user = { id: user.id, username: user.username };
         res.redirect('/');
     } catch (err) {
-        console.log('Error:', err.message);
         res.status(500).send('Error: ' + err.message);
     }
 });
@@ -74,5 +72,6 @@ router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
+
 
 module.exports = router;
