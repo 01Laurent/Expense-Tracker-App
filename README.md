@@ -1,3 +1,7 @@
+It's not complete yet!!
+Don't clone!!
+But if you can finish it by yourself dont hesitate to clone it.
+
 # Expense-Tracker-App
 An app that tracks expenses.(shows you a summary of what you do with your expenses).
 
