@@ -22,11 +22,11 @@ app.use(session({
 
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
-const expenseRouter = require('./routes/expenses');
+const expenseRoute = require('./routes/expenses');
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
-app.use('/expenses', expenseRouter);
+app.use('/expenses', expenseRoute);
 
 sequelize.sync({ force: false })
     .then(() => {

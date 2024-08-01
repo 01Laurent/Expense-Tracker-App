@@ -46,56 +46,51 @@ document.addEventListener('DOMContentLoaded', function() {
           }
       });
   }
-
-  // Handling add expense form submission
-  addExpenseForm.addEventListener('submit', async function(event) {
-    event.preventDefault();
-    console.log('Form submission triggered');
-    const formData = new FormData(addExpenseForm);
-
-    try {
-        const response = await fetch('/expenses/add', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.text();
-        console.log('Server response:', result);
-
-        if (response.ok) {
-            window.location.href = '/expenses/view';
-        } else {
-            alert(result);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-    }
 });
 
+  // Handling add expense form submission
+document.getElementById('addExpenseForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
 
-  // Handling edit expense form submission
-  const editExpenseForm = document.getElementById('editExpenseForm');
-  if (editExpenseForm) {
-      editExpenseForm.addEventListener('submit', async function(event) {
-          event.preventDefault();
-          const formData = new FormData(editExpenseForm);
-          const expenseId = editExpenseForm.getAttribute('data-expense-id');
-          try {
-              const response = await fetch(`/expenses/edit/${expenseId}`, {
-                  method: 'POST',
-                  body: formData
-              });
-              const result = await response.text();
-              if (response.ok) {
-                  window.location.href = '/expenses/view';
-              } else {
-                  alert(result); // Show error message
-              }
-          } catch (error) {
-              console.error('Error:', error);
-              alert('An error occurred. Please try again.');
-          }
-      });
-  }
+    const title = document.getElementById('title').value;
+    const amount = document.getElementById('amount').value;
+    const date = document.getElementById('date').value;
+
+    fetch('/expenses/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title, amount, date })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Expense added successfully') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+            document.getElementById('addExpenseForm').reset();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: data.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Failed to add expense',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    });
 });
