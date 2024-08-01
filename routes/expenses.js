@@ -4,10 +4,31 @@ const Expense = require('../models/expense');
 const path = require('path');
 const authMiddleware = require('../middleware/auth');         
 
+function getUserFromSession(req, res, next) {
+  const userId = req.session.userId;
+  if (userId) {
+    User.findByPk(userId)
+      .then(user => {
+        if (user) {
+          req.user = user;
+          next();
+        } else {
+          res.status(401).json({ message: 'Unauthorized' });
+        }
+      })
+      .catch(error => {
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+      });
+  } else {
+    res.status(401).json({ message: 'Unauthorized' });
+  }
+}
+
 // Serve add expense page
 router.get('/add', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/add_expense.html'));
 });
+
 
 // Handle add expense form submission
 router.post('/add', async (req, res) => {
