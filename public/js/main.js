@@ -94,3 +94,34 @@ document.getElementById('addExpenseForm').addEventListener('submit', function(ev
         });
     });
 });
+
+//handling the edit expense form
+document.getElementById('editEXpenseForm').addEventListener('submit', function(event) {
+    event.preventDefault(); //prevents the default form submission
+
+    const expenseid = '<%= expense.id %>';
+    const title = document.getElementById('title').value;
+    const amount = document.getElementById('amount').value;
+    const date = document.getElementById('date').value;
+    const data = { title, amount, date };
+
+    fetch(`/expenses/edit/${expenseId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle success and show a success message
+        alert('Expense updated successfully!');
+        window.location.href = '/expenses';
+    })
+    .catch((error) => {
+        // Handle errors
+        console.error('Error:', error);
+        alert('Error updating expense.');
+    });
+});
+

@@ -35,6 +35,9 @@ sessionStore.sync();
 router.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/login.html'));
 });
+router.get('/add', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/add_expense.html'));
+});
 
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
