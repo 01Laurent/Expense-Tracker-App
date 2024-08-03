@@ -15,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -38,15 +39,20 @@ router.get('/login', (req, res) => {
 router.get('/add', (req, res) => {
     res.sendFile(path.join(__dirname, '../views/add_expense.html'));
 });
+router.get('edit/:id', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/edit_expense.html'))
+})
 
 const indexRouter = require('./routes/index');
 const authRouter = require('./routes/auth');
-const expenseRoute = require('./routes/expenses');
+const expensesRouter = require('./routes/expenses');
 const User = require('./models/user');
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
-app.use('/expenses', expenseRoute);
+app.use('/expenses', expensesRouter);
+
+
 
 sequelize.sync({ force: false })
     .then(() => {
