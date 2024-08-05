@@ -1,4 +1,5 @@
 # Expense-Tracker-App
+* its just simple app so feel free to make any changes.
 An app that tracks expenses.(shows you a summary of what you do with your expenses).
 
 For you to be able to run the app on your machine, you need to do the following:
