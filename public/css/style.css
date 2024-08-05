@@ -5,24 +5,38 @@ body, html {
     font-family: 'Courier New', Courier, monospace;
     background-color: #f0f0f0;
     color: #333;
+    flex-direction: column;
 }
 
 header {
-    background-color:deepskyblue;
+    background-color: darkcyan;
     color: black;
     text-align: center;
     padding: 1em 0;
     border-radius: 20px;
 }
 
-nav a {
-    margin: 0 10px;
-    color: white;
-    text-decoration: none;
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
 }
-
-nav a:hover {
-    text-decoration: underline;
+nav ul li {
+    margin: 0 1rem;
+}
+nav ul li button {
+    background: darkorange;
+    border-radius: 10px;
+    border: none;
+    color: black;
+    font-size: 2rem;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+}
+nav ul li button:hover {
+    background-color: darkturquoise;
 }
 
 .form-container {

@@ -10,17 +10,19 @@
     <header>
         <h1>Welcome to Expense Tracker</h1>
         <nav>
-            <a href="/register">Register</a>
-            <a href="/login">Login</a>
-            <a href="/expenses/add">Add</a>
-            <a href="/edit_expense">Edit</a>
-            <a href="/view_expense">View</a>
+            <ul>
+                <li><button onclick="location.href='/login'">Login</button></li>
+                <li><button onclick="location.href='/register'">Register</button></li>
+            </ul>
         </nav>
     </header>
-    <section>
+    <div class="form-container">
         <h2>Track Your Expenses Easily</h2>
-        <p>Manage your expenses efficiently and stay within your budget.</p>
-    </section>
+        <h3><p>Manage your expenses efficiently and stay within your budget.</p>
+    </div>
+    <div class="form-container">
+        <img src="https://images.pexels.com/photos/4386365/pexels-photo-4386365.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Expense Tracker App">
+    </div>
     <footer>
         <p>&copy; 2024 Expense Tracker. All rights reserved.</p>
     </footer>
