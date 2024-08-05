@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.json());
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -176,6 +177,29 @@ app.get('/api/total_expenses', async (req, res) => {
         res.json(total);
     } catch (error) {
         res.status(400).json({ error: error.message });
+    }
+});
+
+app.put('/expenses/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, amount, date } = req.body;
+
+        const expense = await Expense.findByPk(id);
+
+        if (!expense) {
+            return res.status(404).json({ error: 'Expense not found' });
+        }
+
+        expense.title = title;
+        expense.amount = amount;
+        expense.date = date;
+
+        await expense.save();
+
+        res.json(expense);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update expense' });
     }
 });
 
