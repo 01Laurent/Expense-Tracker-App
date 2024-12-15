@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <!-- Header -->
+    <header class="bg-primary text-white py-3 mb-4">
+        <div class="container text-center">
+            <h1>Admin Dashboard</h1>
+            <p class="lead">Overview of Users and Expenses</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Users Section -->
+        <section class="mb-5">
+            <h2 class="text-primary mb-3">Users</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Expenses</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <!-- Users data will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Expenses Section -->
+        <section>
+            <h2 class="text-primary mb-3">Expenses</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>User</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesTable">
+                        <!-- Expenses data will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <p class="mb-0">&copy; 2024 Admin Dashboard. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script to fetch data -->
+    <script>
+        // Fetch dashboard data
+        fetch('/admin/dashboard/data')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Fetched Data:', data);
+
+                const usersTable = document.getElementById('usersTable');
+                const expensesTable = document.getElementById('expensesTable');
+
+                // Populate users table
+                data.users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>
+                            <ul class="list-unstyled mb-0">
+                                ${user.Expenses.map(expense => `<li>${expense.title}: $${expense.amount}</li>`).join('')}
+                            </ul>
+                        </td>
+                    `;
+                    usersTable.appendChild(row);
+                });
+
+                // Populate expenses table
+                data.expenses.forEach(expense => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${expense.id}</td>
+                        <td>${expense.title}</td>
+                        <td>${expense.amount}</td>
+                        <td>${new Date(expense.date).toLocaleDateString()}</td>
+                        <td>${expense.User?.username || 'N/A'}</td>
+                    `;
+                    expensesTable.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+</body>
+</html>

@@ -5,76 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/css/dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="header">
-            <h1>Dashboard</h1>
-            <form action="/api/logout" method="POST">
-                <button class="logout-btn" type="submit">Logout</button>
-            </form>
-        </div>
-
-        <!-- Add Expense Form -->
-        <div class="expense-form">
-            <h2>Add Expense</h2>
-            <form id="addExpenseForm">
-                <div class="form-group">
-                    <input type="text" name="title" placeholder="Title" required>
-                </div>
-                <div class="form-group">
-                    <input type="number" name="amount" placeholder="Amount" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <input type="date" name="date" required>
-                </div>
-                <div class="form-group">
-                    <button type="submit">Add Expense</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Edit Expense Form -->
-        <div class="edit-form" style="display: none;">
-            <h2>Edit Expense</h2>
-            <form id="editExpenseForm">
-                <input type="hidden" name="id">
-                <input type="text" name="title" placeholder="Title" required>
-                <input type="number" name="amount" placeholder="Amount" step="0.01" required>
-                <input type="date" name="date" required>
-                <button type="submit">Save Changes</button>
-            </form>
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row">
+            <div class="col-12 header d-flex justify-content-between align-items-center">
+                <h1>Dashboard</h1>
+                <form action="/api/logout" method="POST">
+                    <button class="btn btn-danger logout-btn" type="submit">Logout</button>
+                </form>
+            </div>
         </div>
 
         <!-- Expense Table -->
-        <div class="expense-table">
-            <h2>Expenses</h2>
-            <table id="expenseTable">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Expenses will be dynamically populated here -->
-                </tbody>
-            </table>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Expenses</h2>
+                        <table class="table" id="expenseTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Expenses will be dynamically populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Total Expenses -->
-        <div class="total-expenses">
-            <button id="totalExpensesBtn"></button>
-            <div id="totalExpenses"></div>
+        <!-- Total Expenses and Print Button -->
+        <div class="row mt-4">
+            <div class="col-md-6 text-center">
+                <button id="totalExpensesBtn" class="btn btn-light w-100">Show Total Expenses</button>
+                <div id="totalExpenses" class="mt-3"></div>
+            </div>
+            <div class="col-md-6 text-center">
+                <button id="printPdfBtn" class="btn btn-dark w-100">Print Expenses as PDF</button>
+            </div>
+        </div>
+
+        <!-- Add Expense Form -->
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Add Expense</h2>
+                        <form id="addExpenseForm" class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" name="title" class="form-control" placeholder="Title" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="number" name="amount" class="form-control" placeholder="Amount" step="0.01" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="date" name="date" class="form-control" required>
+                            </div>
+                            <div class="col-md-12 text-end">
+                                <button type="submit" class="btn btn-info">Add Expense</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Expense Form -->
+            <div class="edit-form" style="display: none;">
+                <h2>Edit Expense</h2>
+                <form id="editExpenseForm">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <input type="text" name="title" placeholder="Title" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" name="amount" placeholder="Amount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+            
         </div>
 
         <!-- Expenses Chart -->
-        <div class="expenses-chart">
-            <canvas id="expensesChart"></canvas>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Expenses Chart</h2>
+                        <canvas id="expensesChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

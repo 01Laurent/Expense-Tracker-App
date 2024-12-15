@@ -44,6 +44,9 @@ app.get('/login', (req, res) => {
 app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'register.html'));
 });
+app.get('/admindash', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'admindash.html'));
+});
 app.get('/dashboard', (req, res) => {
     if (!req.session.user){
         return res.redirect('/login');
@@ -51,7 +54,44 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
 });
 
-//API routes
+app.get('/admin/dashboard', async (req, res) => {
+    try {
+        // Fetch data from the database
+        const users = await User.findAll({
+            include: [{ model: Expense, attributes: ['id', 'title', 'amount', 'date'] }]
+        });
+
+        const expenses = await Expense.findAll({
+            include: [{ model: User, attributes: ['username', 'email'] }]
+        });
+
+        // Send the HTML file
+        res.sendFile(path.join(__dirname, 'views', 'adminDash.html')); // Ensure correct path
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Route to provide the dashboard data as JSON
+app.get('/admin/dashboard/data', async (req, res) => {
+    try {
+        const users = await User.findAll({
+            include: [{ model: Expense, attributes: ['id', 'title', 'amount', 'date'] }]
+        });
+
+        const expenses = await Expense.findAll({
+            include: [{ model: User, attributes: ['username', 'email'] }]
+        });
+
+        // Send the data as JSON
+        res.json({ users, expenses });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 app.get('/api/user', (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -71,23 +111,56 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
+// Login Route
 app.post('/api/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password } = req.body;  // Now using 'username' instead of 'email'
     try {
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { username } });  // Querying by 'username'
         if (!user) {
-            return res.status(400).json({ error: 'Invalid username or password' });
+            return res.status(401).json({ error: 'Invalid username or password' });  // Error message updated
         }
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ error: 'Invalid username or password' });
+            return res.status(401).json({ error: 'Invalid username or password' });  // Error message updated
         }
-        req.session.user = user;
-        res.redirect('/dashboard');
+
+        // Set session details
+        req.session.user = {
+            id: user.id,
+            username: user.username,
+            isAdmin: user.role === 'admin',  // Check if the user is an admin
+        };
+
+        // Redirect based on role
+        if (user.role === 'admin') {
+            return res.redirect('/admindash');  // Admin dashboard
+        } else {
+            return res.redirect('/dashboard');  // Normal user dashboard
+        }
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error('Login error:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
+
+// app.post('/api/login', async (req, res) => {
+//     const { username, password } = req.body;
+//     try {
+//         const user = await User.findOne({ where: { username } });
+//         if (!user) {
+//             return res.status(400).json({ error: 'Invalid username or password' });
+//         }
+//         const isMatch = await bcrypt.compare(password, user.password);
+//         if (!isMatch) {
+//             return res.status(400).json({ error: 'Invalid username or password' });
+//         }
+//         req.session.user = user;
+//         res.redirect('/dashboard');
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// });
 
 app.post('/api/logout', (req, res) => {
     req.session.destroy(err => {
@@ -141,6 +214,34 @@ app.put('/api/expenses/:id', async (req, res) => {
         res.json(expense);
     } catch (error) {
         res.status(400).json({ error: error.message });
+    }
+});
+
+app.post('/api/edit_expense', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { id, title, amount, date } = req.body;
+
+    try {
+        const expense = await Expense.findOne({
+            where: { id, userId: req.session.user.id },
+        });
+
+        if (!expense) {
+            return res.status(404).json({ error: 'Expense not found' });
+        }
+
+        expense.title = title;
+        expense.amount = amount;
+        expense.date = date;
+        await expense.save();
+
+        res.json({ success: true, expense });
+    } catch (error) {
+        console.error('Error updating expense:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

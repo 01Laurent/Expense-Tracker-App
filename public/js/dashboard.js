@@ -213,4 +213,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalExpensesDisplay.textContent = `Total Expenses: $${total.toFixed(2)}`;
             });
     });
+
+    document.getElementById("printPdfBtn").addEventListener("click", function () {
+        // Import jsPDF
+        const { jsPDF } = window.jspdf;
+    
+        // Create a new jsPDF instance
+        const doc = new jsPDF();
+    
+        // Add title to the PDF
+        doc.setFontSize(18);
+        doc.text("Expenses Report", 10, 10);
+    
+        // Add table headers
+        doc.setFontSize(12);
+        const table = document.getElementById("expenseTable");
+        const headers = Array.from(table.querySelectorAll("thead th")).map((th) => th.innerText);
+    
+        // Prepare table rows
+        const rows = Array.from(table.querySelectorAll("tbody tr")).map((tr) => {
+            return Array.from(tr.querySelectorAll("td")).map((td) => td.innerText);
+        });
+    
+        // Auto-table for dynamic table rendering
+        doc.autoTable({
+            head: [headers],
+            body: rows,
+            startY: 20,
+        });
+    
+        // Save the PDF
+        doc.save("expenses-report.pdf");
+    });    
 });
